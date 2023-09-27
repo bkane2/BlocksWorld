@@ -1,4 +1,3 @@
-import itertools
 import time
 import json
 import requests
@@ -23,11 +22,10 @@ class World(object):
 	the convenient API to access their properties, like the size
 	of the world, object hierarchies, etc.
 	"""
-	def __init__(self, scene, simulation_mode=False):
+	def __init__(self, scene):
 		self.scene = scene
 		self.entities = []
 		self.active_context = []
-		self.simulation_mode = simulation_mode
 
 		#Set the fundamental extrinsic axes
 		self.right_axis = np.array([1, 0, 0])
@@ -49,9 +47,6 @@ class World(object):
 
 		self.block_by_ids = {}
 		self.block_to_ids = {}
-		print ("SIML ", self.simulation_mode)
-		if self.simulation_mode == False:
-			self.scene_setup()
 
 		self.verbose = False
 		self.verbose_rotation = False
@@ -80,22 +75,10 @@ class World(object):
 		self.history = []
 		self.move_queue = []
 
-		if self.simulation_mode == False:
-			block_data = self.get_block_data()
-			block_data.sort(key = lambda x : x[1][0])
-			for idx in range(len(block_data)):
-				id, location, rotation = block_data[idx]
-				self.block_to_ids[self.blocks[idx]] = id
-				self.block_by_ids[id] = self.blocks[idx]
-				self.blocks[idx].location = location
-				self.blocks[idx].rotation_euler = rotation
-
-			bpy.ops.wm.modal_timer_operator()	
-		else:
-			# self.history.append(self.State(self.entities))
-			self.record_history()
-			if len(self.history) == 1:
-				self.make_checkpoint()
+		# self.history.append(self.State(self.entities))
+		self.record_history()
+		if len(self.history) == 1:
+			self.make_checkpoint()
 
 		self.init_event_log()	
 		self.start_time = time.time()	
@@ -195,21 +178,7 @@ class World(object):
 		block['color_mod'] = material.name
 		block['main'] = 1.0
 		bpy.context.evaluated_depsgraph_get().update()
-		return block
-
-	def scene_setup(self):        
-		bpy.data.materials.new(name="red")
-		bpy.data.materials.new(name="blue")
-		bpy.data.materials.new(name="green")
-		bpy.data.materials['red'].diffuse_color = (1, 0, 0, 0)
-		bpy.data.materials['green'].diffuse_color = (0, 1, 0, 0)
-		bpy.data.materials['blue'].diffuse_color = (0, 0, 1, 0)
-
-		self.block_names = ['Target', 'Starbucks', 'Twitter', 'Texaco', 'McDonald\'s', 'Mercedes', 'Toyota', 'Burger King']
-		materials = [bpy.data.materials['blue'], bpy.data.materials['green'], bpy.data.materials['red']]
-	
-		self.blocks = [self.create_block(name, Vector((0, 0, self.block_edge / 2)), (0,0,0), materials[self.block_names.index(name) % 3]) for name in self.block_names]		
-		dg = bpy.context.evaluated_depsgraph_get().update()        
+		return block      
 
 	def clear_scene(self):
 		"""

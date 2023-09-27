@@ -1,8 +1,24 @@
 # BlocksWorld
-Main repository for the Blocks World project.
 
-asr.py - externalized speech recognition code (basically a copy of the code from
-HCI_manager put in a separate file for a better modularity, but currently unused).
+The spatial reasoning server used in the Blocks World project (forked from [https://github.com/gplatono/BlocksWorld](https://github.com/gplatono/BlocksWorld)).
+
+
+## Quickstart
+
+### Dependencies 
+
+This server should be initiated within the native Python 3.7 environment within Blender. Download Blender here:
+
+https://www.blender.org/download/
+
+### How to run
+
+Then, assuming `blender` is aliased to the Blender executable, run the following terminal command:
+
+`blender bw_scene.blend --python main.py`
+
+
+## Components
 
 bw_tracker.py - implementation of the Blocks World tracker.
 
